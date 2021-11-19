@@ -84,3 +84,26 @@ void Board::print() const {
   }
   std::cout << "+" << '\n';
 }
+
+bool Board::noAdjacentSameValue() const {
+  for (int i = 0; i < numRows; i++){
+    for (int j = 0; j < numCols; j++){
+      if (panel[i][j] == 0) return false;
+
+
+      if (i > 0 && i < numRows-1){
+        if (panel[i-1][j] == panel[i][j] || panel[i+1][j] == panel[i][j]){
+          return false;
+        }
+      }
+
+
+      if (j > 0 && j < numCols -1){
+        if (panel[i][j-1] == panel[i][j] || panel[i][j+1] == panel[i][j]){
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
