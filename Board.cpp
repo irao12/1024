@@ -1,6 +1,9 @@
 #include <iostream>
 #include "Board.hpp"
 #include <iomanip>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
 
 //Default Board is 3
 Board::Board(){
@@ -90,14 +93,14 @@ bool Board::noAdjacentSameValue() const {
     for (int j = 0; j < numCols; j++){
       if (panel[i][j] == 0) return false;
 
-
+      //Check if the cells above and below are equal
       if (i > 0 && i < numRows-1){
         if (panel[i-1][j] == panel[i][j] || panel[i+1][j] == panel[i][j]){
           return false;
         }
       }
 
-
+      //Check if the cells to the left and right are equal
       if (j > 0 && j < numCols -1){
         if (panel[i][j-1] == panel[i][j] || panel[i][j+1] == panel[i][j]){
           return false;
@@ -106,4 +109,45 @@ bool Board::noAdjacentSameValue() const {
     }
   }
   return true;
+}
+
+void Board::selectRandomCell(int& row, int& col){
+  srand(time(NULL));
+  int zeros = 0;
+
+  for (int i = 0; i < numRows; i++){
+    for (int j = 0; j < numCols; j++){
+      if (panel[i][j] == 0) zeros++;
+    }
+  }
+
+  //If there are no more empty cells and no adjacent cells have the same value, end the game
+  if (zeros == 0 && noAdjacentSameValue()){
+    std::cout << "Game over. Try again." << '\n';
+    std::exit(0);
+  }
+
+  //Creates a vector storing all the empty empty cells
+  std::vector <int> empty_cells;
+  for (int i = 0; i < numRows; i++){
+    for (int j = 0; j < numCols; j++){
+      if (panel[i][j] == 0){
+        empty_cells.push_back(numCols * i + j);
+      }
+    }
+  }
+
+  //Randomly pick an empty cell and sets its value to 1
+  int random = rand() % empty_cells.size();
+  row = empty_cells[random] / numCols;
+  col = empty_cells[random] % numCols;
+
+  panel[row][col] = 1;
+  print();
+
+  //Checks if the game is over after setting an empty cell to 1
+  if (noAdjacentSameValue()){
+    std::cout << "Game over. Try again." << '\n';
+    std::exit(0);
+  }
 }
