@@ -1,7 +1,7 @@
 # 1024 - Recreated Using C++ 
 * Original game: [link](http://1024game.org)
 * Project done in CSCI 135 Software Analysis and Design I course
-
+* Played through the terminal
 Given a board of squares where some have numbers, and the rest are empty...
 *	You can use the wasd keys to move the numbered squares in any direction (a for left, d for right, w for up, and s for down.) 
 *	All numbered squares will move in the direction that you select, at the same time, as far as they can go without taking over the space of another square that has a value 
