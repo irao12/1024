@@ -151,3 +151,125 @@ void Board::selectRandomCell(int& row, int& col){
     std::exit(0);
   }
 }
+
+void Board::pressUp(){
+  for (int i = 1; i < numRows; i++){
+    for (int j = 0; j < numCols; j++){
+      if (panel[i-1][j] == panel[i][j]){
+        panel[i-1][j] = panel[i-1][j] * 2;
+        panel[i][j] = 0;
+      }
+      else if (panel[i-1][j] == 0){
+        for (int h = i-1; h >= 0; h--){
+          if (panel[h][j] != 0){
+            if (panel[h][j] == panel[i][j]){
+              panel[h][j] *= 2;
+              panel[i][j] = 0;
+            }
+            panel[h+1][j] = panel[i][j];
+            panel[i][j] = 0;
+            break;
+          }
+          if (h == 0 && panel[h][j] == 0){
+            panel[h][j] = panel[i][j];
+            panel[i][j] = 0;
+          }
+        }
+      }
+
+    }
+  }
+  int row, col;
+  selectRandomCell(row, col);
+}
+
+void Board::pressLeft(){
+  for (int i = 0; i < numRows; i++){
+    for (int j = 1; j < numCols; j++){
+      if (panel[i][j-1] == panel[i][j]){
+        panel[i][j-1] += panel[i][j];
+        panel[i][j] = 0;
+      }
+      else if (panel[i][j-1] == 0){
+        for (int h = j-1; h >= 0; h--){
+          if (panel[i][h] != 0){
+            if (panel[i][h] == panel[i][j]){
+              panel[i][h] *= 2;
+              panel[i][j] = 0;
+            }
+            panel[i][h+1] = panel[i][j];
+            panel[i][j] = 0;
+            break;
+          }
+          if (h == 0 && panel[i][h] == 0){
+            panel[i][h] = panel[i][j];
+            panel[i][j] = 0;
+          }
+        }
+      }
+    }
+  }
+  int row, col;
+  selectRandomCell(row, col);
+}
+
+
+void Board::pressDown(){
+  for (int i = numRows-2; i >= 0; i--){
+    for (int j = 0; j < numCols; j++){
+      if (panel[i+1][j] == panel[i][j]){
+        panel[i+1][j] += panel[i][j];
+        panel[i][j] = 0;
+      }
+      else if (panel[i+1][j] == 0){
+        for (int h = i+1; h < numRows; h++){
+          if (panel[h][j] != 0){
+            if (panel[h][j] == panel[i][j]){
+              panel[h][j] *= 2;
+              panel[i][j] = 0;
+            }
+            panel[h-1][j] = panel[i][j];
+            panel[i][j] = 0;
+            break;
+          }
+          if (h == numRows-1 && panel[h][j]==0){
+            panel[h][j] = panel[i][j];
+            panel[i][j] = 0;
+          }
+        }
+      }
+    }
+  }
+  int row, col;
+  selectRandomCell(row, col);
+}
+
+void Board::pressRight(){
+  for (int i = 0; i < numRows; i++){
+    for (int j = numCols - 2; j >= 0; j--){
+      if (panel[i][j+1] == panel[i][j]){
+        panel[i][j+1] += panel[i][j];
+        panel[i][j] = 0;
+      }
+      else if (panel[i][j+1] == 0){
+        for (int h = j+1; h < numCols; h++){
+          if (panel[i][h] != 0){
+            if (panel[i][h] == panel[i][j]){
+              panel[i][h] *= 2;
+              panel[i][j] = 0;
+            }
+            panel[i][h-1] = panel[i][j];
+            panel[i][j] = 0;
+            break;
+          }
+          if (h == numCols-1 && panel[i][h]==0){
+            panel[i][h] = panel[i][j];
+            panel[i][j] = 0;
+          }
+        }
+      }
+    }
+  }
+  int row, col;
+  selectRandomCell(row, col);
+}
