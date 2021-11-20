@@ -6,6 +6,6 @@ using namespace std;
 int main()
 {
     Board game(4);
-    //game.start();
+    game.start();
     return 0;
 }

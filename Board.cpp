@@ -273,3 +273,98 @@ void Board::pressRight(){
   int row, col;
   selectRandomCell(row, col);
 }
+
+void Board::print_round(int round, std::string move) const{
+  std::cout << "Round" << std::setw(5) << round << ": Press " << move << ". Goal: " << std::setw(4) << target << '\n';
+}
+
+bool Board::validate(char move){
+  if (move == 'w'){
+    for (int j = 0; j < numCols; j++){
+      for (int i = 0; i < numRows-1; i++){
+        if (panel[i][j] == 0) return true;
+        if (panel[i][j] == panel[i+1][j]) return true;
+      }
+    }
+  }
+  if (move == 's'){
+    for (int j = 0; j < numCols; j++){
+      for (int i = numRows-1; i > 0; i--){
+        if (panel[i][j] == 0) return true;
+        if (panel[i][j] == panel[i-1][j]) return true;
+      }
+    }
+  }
+  if (move == 'a'){
+    for (int i = 0; i < numRows; i++){
+      for (int j = 0; j < numCols-1; j++){
+        if (panel[i][j] == 0) return true;
+        if (panel[i][j] == panel[i][j+1]) return true;
+      }
+    }
+  }
+  if (move == 'd'){
+    for (int i = 0; i < numRows; i++){
+      for (int j = numCols-1; j > 0; j--){
+        if (panel[i][j] == 0) return true;
+        if (panel[i][j] == panel[i][j-1]) return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+void Board::calculateMax(){
+  for (int i = 0; i < numRows; i++){
+    for (int j = 0; j < numCols; j++){
+      if (panel[i][j] > max){
+        max = panel[i][j];
+      }
+    }
+  }
+}
+
+void Board::start(){
+    int row, col;
+    //Randomly places two 1's into the panel to begin the game
+    selectRandomCell(row, col);
+    selectRandomCell(row, col);
+    //each loop is a round: asks for input and makes a move depending on the input
+    int round = 0;
+    while (true){
+      char move;
+
+      std::cin >> move;
+      while (move != 'a' && move != 'w' && move != 's' && move != 'd' || !validate(move)){
+        std::cout << "Please enter a valid move" << '\n';
+        std::cin >> move;
+      }
+
+      round += 1;
+
+      if (move == 'a'){
+        print_round(round, "LEFT");
+        pressLeft();
+      }
+      else if (move == 'w'){
+        print_round(round, "UP");
+        pressUp();
+      }
+      else if (move == 'd'){
+        print_round(round, "RIGHT");
+        pressRight();
+
+      }
+      else if (move == 's'){
+        print_round(round, "DOWN");
+        pressDown();
+      }
+
+      calculateMax();
+      if (max == target){
+        std::cout << "Congratulations!" << '\n';
+        std::exit(0);
+      }
+    }
+}
