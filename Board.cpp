@@ -89,26 +89,17 @@ void Board::print() const {
 }
 
 bool Board::noAdjacentSameValue() const {
-  for (int i = 0; i < numRows; i++){
-    for (int j = 0; j < numCols; j++){
-      if (panel[i][j] == 0) return false;
+    for (int row = 0; row < numRows; row++)
+        for (int col = 0; col < numCols-1; col++)
+            if (panel[row][col] == panel[row][col+1])
+               return false;
+      //No two cells share same value in horizontal direction
+    for (int col = 0; col < numCols; col++)
+        for (int row = 0; row < numRows-1; row++)
+            if (panel[row][col] == panel[row+1][col])
+               return false;
 
-      //Check if the cells above and below are equal
-      if (i > 0 && i < numRows-1){
-        if (panel[i-1][j] == panel[i][j] || panel[i+1][j] == panel[i][j]){
-          return false;
-        }
-      }
-
-      //Check if the cells to the left and right are equal
-      if (j > 0 && j < numCols -1){
-        if (panel[i][j-1] == panel[i][j] || panel[i][j+1] == panel[i][j]){
-          return false;
-        }
-      }
-    }
-  }
-  return true;
+    return true;
 }
 
 void Board::selectRandomCell(){
@@ -121,11 +112,14 @@ void Board::selectRandomCell(){
     }
   }
 
+  std::cout << zeros << '\n';
+  std::cout << noAdjacentSameValue() << '\n';
   //If there are no more empty cells and no adjacent cells have the same value, end the game
   if (zeros == 0 && noAdjacentSameValue()){
     std::cout << "Game over. Try again." << '\n';
     std::exit(0);
   }
+  std::cout << "g" << '\n';
 
   //Creates a vector storing all the empty empty cells
   std::vector <int> empty_cells;
@@ -444,26 +438,31 @@ void Board::start(){
         bool valid = false;
 
         switch(move) {
-          case 'D':
-            valid = true;
-            print_round(round, "LEFT");
-            pressLeft();
-            break;
+          // A -> up
           case 'A':
             valid = true;
             print_round(round, "UP");
             pressUp();
             break;
-          case 'C':
-            valid = true;
-            print_round(round, "RIGHT");
-            pressRight();
-            break;
+          // B -> down
           case 'B':
             valid = true;
             print_round(round, "DOWN");
             pressDown();
             break;
+          // C -> right
+          case 'C':
+            valid = true;
+            print_round(round, "RIGHT");
+            pressRight();
+            break;
+          // D -> left
+          case 'D':
+            valid = true;
+            print_round(round, "LEFT");
+            pressLeft();
+            break;
+          // otherwise, the move is not valid
           default:
             std::cout << "Enter a valid move" << '\n';
         }
