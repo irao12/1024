@@ -153,123 +153,233 @@ void Board::selectRandomCell(int& row, int& col){
 }
 
 void Board::pressUp(){
-  for (int i = 1; i < numRows; i++){
-    for (int j = 0; j < numCols; j++){
-      if (panel[i-1][j] == panel[i][j]){
-        panel[i-1][j] = panel[i-1][j] * 2;
-        panel[i][j] = 0;
-      }
-      else if (panel[i-1][j] == 0){
-        for (int h = i-1; h >= 0; h--){
-          if (panel[h][j] != 0){
-            if (panel[h][j] == panel[i][j]){
-              panel[h][j] *= 2;
-              panel[i][j] = 0;
-            }
-            panel[h+1][j] = panel[i][j];
-            panel[i][j] = 0;
-            break;
-          }
-          if (h == 0 && panel[h][j] == 0){
-            panel[h][j] = panel[i][j];
-            panel[i][j] = 0;
-          }
-        }
-      }
+  std::vector<int> nonZeros;
+  // in each column, store the values that are not equal to zero
+  for (int col = 0; col < numCols; col++){
 
+    // store from the top to the bottom
+    for (int row = 0; row < numRows; row++){
+      if (panel[row][col] != 0) {
+        nonZeros.push_back(panel[row][col]);
+      }
     }
+
+    // keeps track of the current index of nonZeros
+    int i = 0;
+    int size = nonZeros.size();
+
+    // merge the identical values
+    while (i < size-1){
+      if (nonZeros[i] == nonZeros[i+1]){
+        // if values are equal, double the first one and set the second one to 0
+        nonZeros[i] *= 2;
+
+        if (max < nonZeros[i])
+          max = nonZeros[i];
+
+        nonZeros[i+1] = 0;
+
+        // skip the value that became zero
+        i+=2;
+      }
+      else {
+        i++;
+      }
+    }
+
+    // update the panel with the merged column
+    int row = 0;
+    for (int i = 0; i < size; i++){
+        if (nonZeros[i] != 0){
+          // if the value is not equal to zero, update the panel and
+          // move onto the next row
+          panel[row][col] = nonZeros[i];
+          row++;
+        }
+    }
+    // if the rows have not all been filled, pad the column with zeros
+    while (row < numRows) {
+      panel[row][col] = 0;
+      row++;
+    }
+    //reset the vector containing nonZeros for the next column
+    nonZeros.clear();
+
   }
+
+  int row, col;
+  selectRandomCell(row, col);
+}
+
+void Board::pressDown(){
+  std::vector<int> nonZeros;
+  // in each column, store the values that are not equal to zero
+  for (int col = 0; col < numCols; col++){
+
+    // store from the bottom to the top
+    for (int row = numRows-1; row >= 0; row--){
+      if (panel[row][col] != 0) {
+        nonZeros.push_back(panel[row][col]);
+      }
+    }
+
+    // keeps track of the current index of nonZeros
+    int i = 0;
+    int size = nonZeros.size();
+
+    // merge the identical values
+    while (i < size-1){
+      if (nonZeros[i] == nonZeros[i+1]){
+        // if values are equal, double the first one and set the second one to 0
+        nonZeros[i] *= 2;
+
+        if (max < nonZeros[i])
+          max = nonZeros[i];
+
+        nonZeros[i+1] = 0;
+
+        // skip the value that became zero
+        i+=2;
+      }
+      else {
+        i++;
+      }
+    }
+
+    // update the panel with the merged column
+    int row = numRows-1;
+    for (int i = 0; i < size; i++){
+        if (nonZeros[i] != 0){
+          // if the value is not equal to zero, update the panel and
+          // move onto the next row
+          panel[row][col] = nonZeros[i];
+          row--;
+        }
+    }
+    // if the rows have not all been filled, pad the column with zeros
+    while (row >= 0) {
+      panel[row][col] = 0;
+      row--;
+    }
+    //reset the vector containing nonZeros for the next column
+    nonZeros.clear();
+  }
+
   int row, col;
   selectRandomCell(row, col);
 }
 
 void Board::pressLeft(){
-  for (int i = 0; i < numRows; i++){
-    for (int j = 1; j < numCols; j++){
-      if (panel[i][j-1] == panel[i][j]){
-        panel[i][j-1] += panel[i][j];
-        panel[i][j] = 0;
-      }
-      else if (panel[i][j-1] == 0){
-        for (int h = j-1; h >= 0; h--){
-          if (panel[i][h] != 0){
-            if (panel[i][h] == panel[i][j]){
-              panel[i][h] *= 2;
-              panel[i][j] = 0;
-            }
-            panel[i][h+1] = panel[i][j];
-            panel[i][j] = 0;
-            break;
-          }
-          if (h == 0 && panel[i][h] == 0){
-            panel[i][h] = panel[i][j];
-            panel[i][j] = 0;
-          }
-        }
+  std::vector<int> nonZeros;
+  // in each row, store the values that are not equal to zero
+  for (int row = 0; row < numRows; row++){
+
+    // store from the left to the right
+    for (int col = 0; col < numCols; col++){
+      if (panel[row][col] != 0) {
+        nonZeros.push_back(panel[row][col]);
       }
     }
-  }
-  int row, col;
-  selectRandomCell(row, col);
-}
 
+    // keeps track of the current index of nonZeros
+    int i = 0;
+    int size = nonZeros.size();
 
-void Board::pressDown(){
-  for (int i = numRows-2; i >= 0; i--){
-    for (int j = 0; j < numCols; j++){
-      if (panel[i+1][j] == panel[i][j]){
-        panel[i+1][j] += panel[i][j];
-        panel[i][j] = 0;
+    // merge the identical values
+    while (i < size-1){
+      if (nonZeros[i] == nonZeros[i+1]){
+        // if values are equal, double the first one and set the second one to 0
+        nonZeros[i] *= 2;
+
+        if (max < nonZeros[i])
+          max = nonZeros[i];
+
+        nonZeros[i+1] = 0;
+
+        // skip the value that became zero
+        i+=2;
       }
-      else if (panel[i+1][j] == 0){
-        for (int h = i+1; h < numRows; h++){
-          if (panel[h][j] != 0){
-            if (panel[h][j] == panel[i][j]){
-              panel[h][j] *= 2;
-              panel[i][j] = 0;
-            }
-            panel[h-1][j] = panel[i][j];
-            panel[i][j] = 0;
-            break;
-          }
-          if (h == numRows-1 && panel[h][j]==0){
-            panel[h][j] = panel[i][j];
-            panel[i][j] = 0;
-          }
-        }
+      else {
+        i++;
       }
     }
+
+    // update the panel with the merged column
+    int col = 0;
+    for (int i = 0; i < size; i++){
+        if (nonZeros[i] != 0){
+          // if the value is not equal to zero, update the panel and
+          // move onto the next row
+          panel[row][col] = nonZeros[i];
+          col++;
+        }
+    }
+    // if the rows have not all been filled, pad the column with zeros
+    while (col < numCols) {
+      panel[row][col] = 0;
+      col++;
+    }
+    //reset the vector containing nonZeros for the next column
+    nonZeros.clear();
   }
   int row, col;
   selectRandomCell(row, col);
 }
 
 void Board::pressRight(){
-  for (int i = 0; i < numRows; i++){
-    for (int j = numCols - 2; j >= 0; j--){
-      if (panel[i][j+1] == panel[i][j]){
-        panel[i][j+1] += panel[i][j];
-        panel[i][j] = 0;
-      }
-      else if (panel[i][j+1] == 0){
-        for (int h = j+1; h < numCols; h++){
-          if (panel[i][h] != 0){
-            if (panel[i][h] == panel[i][j]){
-              panel[i][h] *= 2;
-              panel[i][j] = 0;
-            }
-            panel[i][h-1] = panel[i][j];
-            panel[i][j] = 0;
-            break;
-          }
-          if (h == numCols-1 && panel[i][h]==0){
-            panel[i][h] = panel[i][j];
-            panel[i][j] = 0;
-          }
-        }
+  std::vector<int> nonZeros;
+  // in each row, store the values that are not equal to zero
+  for (int row = 0; row < numRows; row++){
+
+    // store from the right to the left
+    for (int col = numCols-1; col >= 0; col--){
+      if (panel[row][col] != 0) {
+        nonZeros.push_back(panel[row][col]);
       }
     }
+
+    // keeps track of the current index of nonZeros
+    int i = 0;
+    int size = nonZeros.size();
+
+    // merge the identical values
+    while (i < size-1){
+      if (nonZeros[i] == nonZeros[i+1]){
+        // if values are equal, double the first one and set the second one to 0
+        nonZeros[i] *= 2;
+
+        if (max < nonZeros[i])
+          max = nonZeros[i];
+
+        nonZeros[i+1] = 0;
+
+        // skip the value that became zero
+        i+=2;
+      }
+      else {
+        i++;
+      }
+    }
+
+    // update the panel with the merged column
+    int col = numCols-1;
+    for (int i = 0; i < size; i++){
+        if (nonZeros[i] != 0){
+          // if the value is not equal to zero, update the panel and
+          // move onto the next row
+          panel[row][col] = nonZeros[i];
+          col--;
+        }
+    }
+    // if the rows have not all been filled, pad the column with zeros
+    while (col >= 0) {
+      panel[row][col] = 0;
+      col--;
+    }
+    //reset the vector containing nonZeros for the next column
+    nonZeros.clear();
   }
+
   int row, col;
   selectRandomCell(row, col);
 }
