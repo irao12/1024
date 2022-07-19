@@ -111,7 +111,7 @@ bool Board::noAdjacentSameValue() const {
   return true;
 }
 
-void Board::selectRandomCell(int& row, int& col){
+void Board::selectRandomCell(){
   srand(time(NULL));
   int zeros = 0;
 
@@ -139,8 +139,8 @@ void Board::selectRandomCell(int& row, int& col){
 
   //Randomly pick an empty cell and sets its value to 1
   int random = rand() % empty_cells.size();
-  row = empty_cells[random] / numCols;
-  col = empty_cells[random] % numCols;
+  int row = empty_cells[random] / numCols;
+  int col = empty_cells[random] % numCols;
 
   panel[row][col] = 1;
   print();
@@ -208,7 +208,7 @@ void Board::pressUp(){
   }
 
   int row, col;
-  selectRandomCell(row, col);
+  selectRandomCell();
 }
 
 void Board::pressDown(){
@@ -266,7 +266,7 @@ void Board::pressDown(){
   }
 
   int row, col;
-  selectRandomCell(row, col);
+  selectRandomCell();
 }
 
 void Board::pressLeft(){
@@ -323,7 +323,7 @@ void Board::pressLeft(){
     nonZeros.clear();
   }
   int row, col;
-  selectRandomCell(row, col);
+  selectRandomCell();
 }
 
 void Board::pressRight(){
@@ -381,7 +381,7 @@ void Board::pressRight(){
   }
 
   int row, col;
-  selectRandomCell(row, col);
+  selectRandomCell();
 }
 
 void Board::print_round(int round, std::string move) const{
@@ -389,15 +389,17 @@ void Board::print_round(int round, std::string move) const{
 }
 
 bool Board::validate(char move){
-  if (move == 'w'){
+  if (move == 'A'){
     for (int j = 0; j < numCols; j++){
+      // check if there is at least one column that can be
+      // moved up
       for (int i = 0; i < numRows-1; i++){
         if (panel[i][j] == 0) return true;
         if (panel[i][j] == panel[i+1][j]) return true;
       }
     }
   }
-  if (move == 's'){
+  if (move == 'B'){
     for (int j = 0; j < numCols; j++){
       for (int i = numRows-1; i > 0; i--){
         if (panel[i][j] == 0) return true;
@@ -405,7 +407,7 @@ bool Board::validate(char move){
       }
     }
   }
-  if (move == 'a'){
+  if (move == 'D'){
     for (int i = 0; i < numRows; i++){
       for (int j = 0; j < numCols-1; j++){
         if (panel[i][j] == 0) return true;
@@ -413,7 +415,7 @@ bool Board::validate(char move){
       }
     }
   }
-  if (move == 'd'){
+  if (move == 'C'){
     for (int i = 0; i < numRows; i++){
       for (int j = numCols-1; j > 0; j--){
         if (panel[i][j] == 0) return true;
@@ -425,56 +427,53 @@ bool Board::validate(char move){
   return false;
 }
 
-void Board::calculateMax(){
-  for (int i = 0; i < numRows; i++){
-    for (int j = 0; j < numCols; j++){
-      if (panel[i][j] > max){
-        max = panel[i][j];
-      }
-    }
-  }
-}
-
 void Board::start(){
     int row, col;
     //Randomly places two 1's into the panel to begin the game
-    selectRandomCell(row, col);
-    selectRandomCell(row, col);
+    selectRandomCell();
+    selectRandomCell();
     //each loop is a round: asks for input and makes a move depending on the input
-    int round = 0;
+    int round = 1;
     while (true){
       char move;
+      // if the first value is esc, check if it was an arrow key
+      if (getchar() == '\033') {
+        getchar(); // skip the [
+        move = getchar();
 
-      std::cin >> move;
-      while (move != 'a' && move != 'w' && move != 's' && move != 'd' || !validate(move)){
-        std::cout << "Please enter a valid move" << '\n';
-        std::cin >> move;
-      }
+        bool valid = false;
 
-      round += 1;
-
-      if (move == 'a'){
-        print_round(round, "LEFT");
-        pressLeft();
-      }
-      else if (move == 'w'){
-        print_round(round, "UP");
-        pressUp();
-      }
-      else if (move == 'd'){
-        print_round(round, "RIGHT");
-        pressRight();
-
-      }
-      else if (move == 's'){
-        print_round(round, "DOWN");
-        pressDown();
-      }
-
-      calculateMax();
-      if (max == target){
-        std::cout << "Congratulations!" << '\n';
-        std::exit(0);
+        switch(move) {
+          case 'D':
+            valid = true;
+            print_round(round, "LEFT");
+            pressLeft();
+            break;
+          case 'A':
+            valid = true;
+            print_round(round, "UP");
+            pressUp();
+            break;
+          case 'C':
+            valid = true;
+            print_round(round, "RIGHT");
+            pressRight();
+            break;
+          case 'B':
+            valid = true;
+            print_round(round, "DOWN");
+            pressDown();
+            break;
+          default:
+            std::cout << "Enter a valid move" << '\n';
+        }
+        if (valid){
+          round += 1;
+          if (max == target){
+            std::cout << "Congratulations!" << '\n';
+            std::exit(0);
+          }
+        }
       }
     }
 }

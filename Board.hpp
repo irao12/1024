@@ -25,7 +25,7 @@ public:
         //set each cell of the panel to be zero
     void print() const;
         //print the panel
-    void selectRandomCell(int& row, int& col);
+    void selectRandomCell();
         //select a random cell from empty cell
     void pressUp();
     void pressDown();
